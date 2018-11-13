@@ -1,5 +1,4 @@
 <html>
-  <!-- See also: http://kempe.net/blog/2014/06/14/leaflet-pan-zoom-image.html -->
   <head>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"></script>
     <style>
@@ -7,14 +6,45 @@
       width: 100%;
       height: 100%;
       border: 1px solid #ccc;
-      margin-bottom: 10px;
+      position: fixed;
+      top: 0;
+      left: 200px;
     }
-.leaflet-container {
-    background-color: #3a3a3a;
-}
+    .leaflet-container {
+      background-color: #3a3a3a;
+    }
+    .sidebar {
+      width: 150px;
+	  text-align: center;
+      vertical-align: right;
+    }
+    .checkboxes {
+        text-align: left;
+    }
     </style>
   </head>
   <body>
+        <div class=sidebar>
+                <h3>Options</H3>
+                <div class=checkboxes>
+                Zones: <input type="checkbox" id="zonesCheck" onclick="toggleOverlay()">
+                <br>
+                <hr>
+                <h4 class=sidebar>Items</h4>
+                <input type="checkbox" id="gunsCheck"><label for="gunsCheck">Guns</label>
+                <br>
+                <input type="checkbox" id="meleeCheck"><label for="meleeCheck">Melee</label>
+                <br>
+                <input type="checkbox" id="armorCheck"><label for="armorCheck">Armor</label>
+                <br>
+                <input type="checkbox" id="powerarmorCheck"><label for="powerarmorCheck">PowerArmor</label>
+                <br>
+                <input type="checkbox" id="fusioncoreCheck"><label for="fusioncoreCheck">FusionCore</label>
+                <br>
+                <input type="checkbox" id="treasureCheck"><label for="treasureCheck">Treasure</label>
+                </div>
+
+        </div>
     <div id="image-map"></div>
 
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
@@ -22,10 +52,10 @@
     // Using leaflet.js to pan and zoom a big image.
     // create the slippy map
     var map = L.map('image-map', {
-      minZoom: 1.5,
+      minZoom: 1.25,
       maxZoom: 5,
       center: [0, 0],
-      zoom: 1,
+      zoom: 1.25,
       zoomControl: false,
       crs: L.CRS.Simple
     });
@@ -34,36 +64,38 @@
     var w = 6538,
         h = 6522,
         landscape = 'fallout76map_full.jpg';
-	zones = 'fallout76map_full_zones.jpg';
+        zones = 'fallout76map_full_zones.jpg';
     // calculate the edges of the image, in coordinate space
     var southWest = map.unproject([0, h], map.getMaxZoom()-1);
     var northEast = map.unproject([w, 0], map.getMaxZoom()-1);
     var bounds = new L.LatLngBounds(southWest, northEast);
 
-    // add the image overlay, 
+    // add the image overlay,
     // so that it covers the entire map
-    landscapeMap = L.imageOverlay(landscape, bounds).addTo(map);
-	
+        landscapeMap = L.imageOverlay(landscape, bounds).addTo(map);
+    zonesMap = L.imageOverlay(zones, bounds).addTo(map);
+    map.removeLayer(zonesMap);
+
     // tell leaflet that the map is exactly as big as the image
     map.setMaxBounds(bounds);
 
     L.control.zoom({
-	position:'topright'
+        position:'topright'
     }).addTo(map);
 
-	// test toggle
-	function toggleOverlay(e){
-		// if landscape, remove and add zones
-		if (map.hasLayer(landscapeMap)){
-			map.removeLayer(landscapeMap);
-			zonesMap = L.imageOverlay(zones, bounds).addTo(map);
-		}
-		else{
-			map.removeLayer(zonesMap);
-			landscapeMap = L.imageOverlay(landscape, bounds).addTo(map);
-		}
-	}
-	map.on('click', toggleOverlay);
+        // test toggle
+        function toggleOverlay(e){
+                // if landscape, remove and add zones
+                if (map.hasLayer(landscapeMap)){
+                        map.removeLayer(landscapeMap);
+                        zonesMap = L.imageOverlay(zones, bounds).addTo(map);
+                }
+                else{
+                        map.removeLayer(zonesMap);
+                        landscapeMap = L.imageOverlay(landscape, bounds).addTo(map);
+                }
+        }
+        //map.on('click', toggleOverlay);
     </script>
   </body>
 </html>
